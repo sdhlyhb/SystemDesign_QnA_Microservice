@@ -3,20 +3,12 @@ const app = require('../server.js');
 
 
 describe('Test root', () => {
-  test('GET /', (done) => {
-    request(app)
-      .get('/')
-      .expect(200)
-      .expect(res => {
-        res.body = 'questions and answers!';
-      })
-      .end((err, res) => {
-        if (err) {
-          console.log(err);
-          return done(err);
-        }
-        return done();
-      });
+  it('GET /', async () => {
+    const res = await request(app)
+      .get('/');
+    // console.log(res);
+    expect(res.status).toEqual(200);
+    expect(res.text).toEqual('questions and answers!');
 
   });
 });
@@ -25,24 +17,15 @@ describe('Test root', () => {
 
 
 describe('Test sample questions response', () => {
-  test('GET /qa/questions', (done) => {
-    request(app)
+  it('GET /qa/questions', async () => {
+    const res = await request(app)
       .get('/qa/questions')
-      .expect(200)
-      .expect('Content-type', /json/)
-      .expect((res) => {
-        console.log(res.body);
-        // eslint-disable-next-line camelcase
-        res.body.data.product_id = '71697';
-        res.body.data.results.length = 16;
-      })
-      .end((err, res) => {
-        if (err) {
-          console.log(err);
-          return done(err);
-        }
-        return done();
-      });
+      .set('Accept', 'application/json');
+    // console.log(res.body.data.results);
+    expect(res.status).toEqual(200);
+    expect(res.body.data.results.length).toEqual(16);
+    expect(res.body.data.product_id).toEqual('71697');
+
 
   });
 });
