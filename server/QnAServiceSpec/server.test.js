@@ -15,7 +15,6 @@ describe('Test root', () => {
 
 
 
-
 describe('Test sample questions response', () => {
   it('GET /qa/questions', async () => {
     const res = await request(app)

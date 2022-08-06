@@ -2,12 +2,15 @@ const express = require('express');
 const app = express();
 const sampleData = require('../DataFiles/sampleQnAData.js');
 // const PORT = 3000;
+require('dotenv').config();
+
 
 app.use(express.json());
 
 app.get('/', (req, res) => {
 
   res.status(200).send('questions and answers!');
+
 
 });
 
