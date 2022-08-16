@@ -5,13 +5,9 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
+const displayQuestionTest = (product_id, count) => {
+  const queryString = `SELECT * from questions WHERE product_id = ${product_id} and reported = false LIMIT ${count}`;
+  return pool.query(queryString);
+};
 
-
-
-
-
-
-
-
-
-module.exports = {};
+module.exports = { displayQuestionTest };

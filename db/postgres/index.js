@@ -2,11 +2,11 @@ require('dotenv').config();
 const { Pool, Client } = require('pg');
 
 const configs = {
-  user: process.env.pg_user,
-  host: process.env.pg_host,
+  user: process.env.PG_USER,
+  host: 'localhost',
   database: 'sdc_qna',
-  password: process.env.pg_password,
-  port: process.env.pg_port,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 };
 
 const pool = new Pool(configs);
@@ -33,9 +33,9 @@ const clientDemo = async () => {
 
 (async () => {
   const poolResult = await poolDemo();
-  console.log(`Time with pool${poolResult.rows[0].now}`);
+  console.log(`Time with pool: ${poolResult.rows[0].now}`);
   const clientResult = await clientDemo();
-  console.log(`Time with client${clientResult.rows[0].now}`);
+  console.log(`Time with client: ${clientResult.rows[0].now}`);
 })();
 
 module.exports = pool;
