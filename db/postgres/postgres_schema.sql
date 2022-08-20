@@ -41,6 +41,36 @@ ALTER TABLE "photos" ADD FOREIGN KEY ("answer_id") REFERENCES "answers" ("id");
 \copy answers from '/Users/serenah/Desktop/HackReactor/SDC/CSV/answers.csv' DELIMITER ',' CSV HEADER;
 \copy photos from '/Users/serenah/Desktop/HackReactor/SDC/CSV/answers_photos.csv' DELIMITER ',' CSV HEADER;
 
+-- DROP TABLE IF EXISTS photos_urls;
+-- CREATE TABLE "photos_urls" (
+--   "id" int PRIMARY KEY,
+--   "body" varchar(1000),
+--   "date"
+--   "photo_url" varchar(255)
+-- );
+-- INSERT INTO photos_urls
+-- SELECT
+--   a.question_id AS id,
+--   a.answer_body AS body,
+--   a.answer_date AS date,
+--   a.answerer_name,
+--   a.answer_helpfulness AS helpfulness,
+--   a.answer_reported AS reported,
+--   (
+--     SELECT json_agg(item)
+--     FROM (
+--       SELECT
+--         p.id AS id,
+--         p.photo_url AS url
+--       FROM photos p JOIN answers a ON p.answer_id = a.id
+--       ) item
+--   ) AS photos
+-- FROM answers a;
+
+
+
+
+
 ALTER TABLE questions ALTER COLUMN question_date SET DATA TYPE timestamp with time zone USING to_timestamp(question_date/1000);
 ALTER TABLE questions ALTER COLUMN question_date SET DEFAULT now();
 ALTER TABLE questions ALTER COLUMN reported DROP DEFAULT;

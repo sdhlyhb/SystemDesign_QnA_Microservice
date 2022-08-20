@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const controller = require('./controllers');
 
-const sampleData = require('../DataFiles/sampleQnAData');
+// const sampleData = require('../DataFiles/sampleQnAData');
 // const PORT = 3000;
 require('dotenv').config();
 
@@ -14,9 +14,9 @@ app.get('/', (req, res) => {
   res.status(200).send('questions and answers!');
 });
 
-app.get('/qa/questions', (req, res) => {
-  res.status(200).json({ data: sampleData.sampleQuestionData71697 });
-});
+// app.get('/qa/questions', (req, res) => {
+//   res.status(200).json({ data: sampleData.sampleQuestionData71697 });
+// });
 
 /** ******************************************
  *              expected routes:
@@ -31,9 +31,7 @@ app.put('/qa/questions/:question_id/report', controller.reportQuestion);
 app.put('/qa/answers/:answer_id/helpful', controller.voteAnswerHelpful);
 app.put('/qa/answers/:answer_id/report', controller.reportAnswer);
 
-
-
 app.get('/qa/test_display', controller.displayQuestionTest); // this one is just a test, not related to FEC
-
+app.get('/qa/test_answerdisplay', controller.displayAnswersTest); // this one is just a test, not related to FEC
 
 module.exports = app;
