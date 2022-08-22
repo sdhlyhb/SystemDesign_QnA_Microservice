@@ -5,9 +5,18 @@ pool.on('error', (err) => {
   process.exit(-1);
 });
 
+const getQuestions = (product_id, count, page) => {
+  const queryString = `SELECT
+  id AS question_id, question_body, question_date, asker_name, reported, helpfulness AS question_helpfulness
+  FROM questions WHERE product_id=$1 AND reported = false ORDER BY id LIMIT $2 OFFSET $3;`;
+
+  const values = [product_id, count, count * (page - 1)];
+  return pool.query(queryString, values);
+};
+
 const getAnswersResults = (question_id, count, page) => {
-  count = count || 5;
-  page = page || 1;
+  // count = count || 5;
+  // page = page || 1;
 
   const queryString = `SELECT
   a.id AS answer_id,
@@ -73,7 +82,7 @@ const reportQuestion = (question_id) => {
 };
 
 const voteAnswerHelpful = (answer_id) => {
-  const queryString = 'UPDATE answers SET helpfulness = helpfulness + 1 WHERE id = $1;';
+  const queryString = 'UPDATE answers SET answer_helpfulness = answer_helpfulness + 1 WHERE id = $1;';
   const values = [answer_id];
   return pool.query(queryString, values);
 };
@@ -90,6 +99,7 @@ const displayQuestionTest = (product_id, count) => {
 };
 
 module.exports = {
+  getQuestions,
   getAnswersResults,
   addAQuestion,
   addAnswer,

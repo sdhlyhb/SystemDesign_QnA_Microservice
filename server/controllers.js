@@ -1,14 +1,49 @@
 const models = require('./models');
 
 // get questions:
-const getQuestions = (req, res) => {
-  console.log(req.body);
-  res.sendStatus(200);
+const getQuestions = async (req, res) => {
+  const { product_id } = req.query;
+  const count = req.query.count || 5;
+  const page = req.query.page || 1;
+  const formatted = {};
+  formatted.product_id = product_id;
+  const getQReponse = await models.getQuestions(product_id, count, page);
+  const questionInfo = getQReponse.rows;
+  formatted.results = questionInfo;
+  const answersInfoPromises = questionInfo.map((question) => {
+    const { question_id } = question;
+    const page_q = 1;
+    const count_q = 10;
+    return models.getAnswersResults(question_id, count_q, page_q);
+  });
+  const answersResponse = await Promise.all(answersInfoPromises);
+  const answers = answersResponse.map((obj) => obj.rows);
+  for (let i = 0; i < answers.length; i++) {
+    if (!answers[i].length) {
+      formatted.results[i].answers = {};
+    } else {
+      formatted.results[i].answers = {};
+      answers[i].forEach((ans) => {
+        const id = ans.answer_id;
+        ans.id = id;
+        delete ans.answer_id;
+        if (ans.photos) {
+          const urls = ans.photos.map((urlObj) => urlObj.url);
+          ans.photos = urls;
+        }
+        formatted.results[i].answers[id] = ans;
+      });
+    }
+  }
+
+  console.log(formatted);
+
+  res.status(200).send(formatted);
 };
 
 const getAnswers = (req, res) => {
   const { question_id } = req.params;
-  const count = req.params.count || 5;
+  const count = req.query.count || 5;
   const page = req.query.page || 1;
   const formatted = {};
   models.getAnswersResults(question_id, count, page)
@@ -20,8 +55,6 @@ const getAnswers = (req, res) => {
       formatted.results = response.rows;
       res.status(200).send(formatted);
     }).catch((err) => res.status(500).send(err));
-
-
 };
 
 const addAQuestion = (req, res) => {
@@ -35,11 +68,12 @@ const addAQuestion = (req, res) => {
 
 const addAnswer = (req, res) => {
   console.log(req.body);
-  // const dataObj = req.body;
-  // models.addAnswer(dataObj.product_id, dataObj.body, dataObj.name, dataObj.email)
-  //   .then((response) => {
-  //     res.status(201).send(response);
-  //   }).catch((err) => res.status(500).send(err));
+  const dataObj = req.body;
+  const { question_id } = req.params;
+  models.addAnswer(question_id, dataObj.body, dataObj.name, dataObj.email, dataObj.photos)
+    .then((response) => {
+      res.status(201).send(response);
+    }).catch((err) => res.status(500).send(err));
   res.status(201).send('Answer added!');
 };
 
@@ -83,7 +117,7 @@ const reportAnswer = (req, res) => {
     }).catch((err) => res.status(500).send(err));
 };
 
-// test display upto 5 results with product_id = 1, reported = false, unformatted;
+// test display upto 5 results with product_id = 1, reported = false
 const displayQuestionTest = (req, res) => {
   const product_id = 1;
   const count = 5;
