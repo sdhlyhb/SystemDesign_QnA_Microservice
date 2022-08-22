@@ -31,7 +31,7 @@ app.put('/qa/questions/:question_id/report', controller.reportQuestion);
 app.put('/qa/answers/:answer_id/helpful', controller.voteAnswerHelpful);
 app.put('/qa/answers/:answer_id/report', controller.reportAnswer);
 
-app.get('/qa/test_display', controller.displayQuestionTest); // this one is just a test, not related to FEC
-app.get('/qa/test_answerdisplay', controller.displayAnswersTest); // this one is just a test, not related to FEC
+// app.get('/qa/test_display', controller.displayQuestionTest); // this one is just a test, not related to FEC
+// app.get('/qa/test_answerdisplay', controller.displayAnswersTest); // this one is just a test, not related to FEC
 
 module.exports = app;

@@ -121,31 +121,31 @@ const reportAnswer = (req, res) => {
 };
 
 // test display upto 5 results with product_id = 1, reported = false
-const displayQuestionTest = (req, res) => {
-  const product_id = 1;
-  const count = 5;
-  models.displayQuestionTest(product_id, count)
-    .then((response) => {
-      console.log('this is test display for product_id 1:', response);
-      res.status(200).send(response.rows);
-    }).catch((err) => res.status(500).send(err));
-};
+// const displayQuestionTest = (req, res) => {
+//   const product_id = 1;
+//   const count = 5;
+//   models.displayQuestionTest(product_id, count)
+//     .then((response) => {
+//       console.log('this is test display for product_id 1:', response);
+//       res.status(200).send(response.rows);
+//     }).catch((err) => res.status(500).send(err));
+// };
 
-const displayAnswersTest = (req, res) => {
-  const question_id = 36;
-  const count = 15;
-  const page = 1;
-  const formatted = {};
-  models.getAnswersResults(question_id, count, page)
-    .then((response) => {
-      console.log('this is test display for question_id 5:', response.rows);
-      formatted.question = question_id;
-      formatted.page = page;
-      formatted.count = count;
-      formatted.results = response.rows;
-      res.status(200).send(formatted);
-    }).catch((err) => res.status(500).send(err));
-};
+// const displayAnswersTest = (req, res) => {
+//   const question_id = 36;
+//   const count = 15;
+//   const page = 1;
+//   const formatted = {};
+//   models.getAnswersResults(question_id, count, page)
+//     .then((response) => {
+//       console.log('this is test display for question_id 5:', response.rows);
+//       formatted.question = question_id;
+//       formatted.page = page;
+//       formatted.count = count;
+//       formatted.results = response.rows;
+//       res.status(200).send(formatted);
+//     }).catch((err) => res.status(500).send(err));
+// };
 
 module.exports = {
   getQuestions,
@@ -156,6 +156,6 @@ module.exports = {
   reportQuestion,
   voteAnswerHelpful,
   reportAnswer,
-  displayQuestionTest,
-  displayAnswersTest,
+  // displayQuestionTest,
+  // displayAnswersTest,
 };

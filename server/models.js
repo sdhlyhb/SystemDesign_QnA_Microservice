@@ -93,10 +93,10 @@ const reportAnswer = (answer_id) => {
 };
 
 // test functions, not related to FEC
-const displayQuestionTest = (product_id, count) => {
-  const queryString = `SELECT * from questions WHERE product_id = ${product_id} and reported = false LIMIT ${count}`;
-  return pool.query(queryString);
-};
+// const displayQuestionTest = (product_id, count) => {
+//   const queryString = `SELECT * from questions WHERE product_id = ${product_id} and reported = false LIMIT ${count}`;
+//   return pool.query(queryString);
+// };
 
 module.exports = {
   getQuestions,
@@ -107,5 +107,5 @@ module.exports = {
   reportQuestion,
   voteAnswerHelpful,
   reportAnswer,
-  displayQuestionTest,
+  // displayQuestionTest,
 };
