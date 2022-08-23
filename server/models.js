@@ -42,7 +42,7 @@ FROM answers a where a.question_id = $1 AND a.answer_reported = false limit $2 O
 };
 
 const addAQuestion = (product_id, body, name, email) => {
-  const queryString = `INSERT INTO question (product_id, question_body, question_date, asker_name, asker_email)
+  const queryString = `INSERT INTO questions (product_id, question_body, question_date, asker_name, asker_email)
   VALUES ($1, $2, NOW(), $3, $4);`;
   const values = [product_id, body, name, email];
 
@@ -50,23 +50,24 @@ const addAQuestion = (product_id, body, name, email) => {
 };
 
 const addAnswer = (question_id, body, name, email, photos) => {
-  let queryString;
-  if (photos.length) {
-    queryString = `WITH answer_full AS (
-    INSERT INTO answers (question_id, answer_body, answer_date, answerer_name, answerer_email)
-   VALUES ($1, $2, NOW(), $3, $4)
-   returning id
-  )
-  INSERT INTO answers_photos (answer_id, photo_url)
-  VALUES ((SELECT id FROM answer_full), unnest (${photos}))
-  `;
+  const queryString_insertAns = `
+  INSERT INTO answers (question_id, answer_body, answer_date, answerer_name, answerer_email)
+ VALUES ($1, $2, NOW(), $3, $4)`;
+  const values_insertAns = [question_id, body, name, email];
+  if (photos.length === 0) {
+    return pool.query(queryString_insertAns, values_insertAns);
   } else {
-    queryString = `
-      INSERT INTO answers (question_id, answer_body, answer_date, answerer_name, answerer_email)
-     VALUES ($1, $2, NOW(), $3, $4)`;
+    const promises = [pool.query(queryString_insertAns, values_insertAns)];
+    const promises2 = photos.map((url) => {
+      const queryString_insertP = `INSERT INTO photos (answer_id, photo_url) VALUES (currval('answers_id_seq'), $1);`;
+      const values = [url];
+      return pool.query(queryString_insertP, values);
+    });
+    const promises_all = promises.concat(promises2);
+    return Promise.all(promises_all);
+
   }
-  const values = [question_id, body, name, email];
-  return pool.query(queryString, values);
+
 };
 
 const voteQuestionHelpful = (question_id) => {
@@ -94,7 +95,8 @@ const reportAnswer = (answer_id) => {
 
 // test functions, not related to FEC
 // const displayQuestionTest = (product_id, count) => {
-//   const queryString = `SELECT * from questions WHERE product_id = ${product_id} and reported = false LIMIT ${count}`;
+// eslint-disable-next-line max-len
+// const queryString = `SELECT * from questions WHERE product_id = ${product_id} and reported = false LIMIT ${count}`;
 //   return pool.query(queryString);
 // };
 

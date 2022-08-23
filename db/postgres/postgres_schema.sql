@@ -5,7 +5,7 @@ CREATE DATABASE sdc_qna;
 
 
 CREATE TABLE IF NOT EXISTS "questions" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY ,
   "product_id" int,
   "question_body" varchar(1000) NOT NULL,
   "question_date" bigint,
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS "questions" (
 );
 
 CREATE TABLE IF NOT EXISTS "answers" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "question_id" int,
   "answer_body" varchar(1000) NOT NULL,
   "answer_date" bigint,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS "answers" (
 );
 
 CREATE TABLE IF NOT EXISTS "photos" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY ,
   "answer_id" int,
   "photo_url" varchar(255)
 );
@@ -92,6 +92,12 @@ ALTER TABLE answers ALTER COLUMN answer_reported SET DEFAULT false;
 
 
 
+
+
 CREATE INDEX idx_product_id ON questions(product_id);
 CREATE INDEX fk_answer_question_id ON answers(question_id);
 CREATE INDEX fk_photos_answer_id ON photos(answer_id);
+
+SELECT setval ('questions_id_seq', (SELECT max(id) FROM questions) + 1);
+SELECT setval ('answers_id_seq', (SELECT max(id) FROM answers) + 1);
+SELECT setval ('photos_id_seq', (SELECT max(id) FROM photos) + 1);

@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-param-reassign */
 const models = require('./models');
 
 // get questions:
@@ -52,7 +54,7 @@ const getAnswers = (req, res) => {
   const formatted = {};
   models.getAnswersResults(question_id, count, page)
     .then((response) => {
-      console.log(`this is test display for question_id ${question_id}:`, response.rows);
+      // console.log(`this is test display for question_id ${question_id}:`, response.rows);
       formatted.question = question_id;
       formatted.page = page;
       formatted.count = count;
@@ -65,23 +67,21 @@ const addAQuestion = (req, res) => {
   const dataObj = req.body;
   models.addAQuestion(dataObj.product_id, dataObj.body, dataObj.name, dataObj.email)
     .then((response) => {
-      console.log(response);
       res.status(201).send('Question added!');
     }).catch((err) => res.status(500).send(err));
 };
 
 const addAnswer = (req, res) => {
-  console.log(req.body);
   const dataObj = req.body;
   const { question_id } = req.params;
   models.addAnswer(question_id, dataObj.body, dataObj.name, dataObj.email, dataObj.photos)
     .then((response) => {
-      res.status(201).send(response);
+      res.status(201).send('Answer added!');
     }).catch((err) => res.status(500).send(err));
 };
 
 const voteQuestionHelpful = (req, res) => {
-  console.log(req.params);
+  // console.log(req.params);
   const { question_id } = req.params;
   models.voteQuestionHelpful(question_id)
     .then((response) => {
@@ -95,7 +95,7 @@ const reportQuestion = (req, res) => {
   const { question_id } = req.params;
   models.reportQuestion(question_id)
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       res.status(204).send('Question is reported!');
     }).catch((err) => res.status(500).send(err));
 };
@@ -105,7 +105,7 @@ const voteAnswerHelpful = (req, res) => {
   const { answer_id } = req.params;
   models.voteAnswerHelpful(answer_id)
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       res.status(204).send('Answer voted helpful!');
     }).catch((err) => res.status(500).send(err));
 };
@@ -115,7 +115,7 @@ const reportAnswer = (req, res) => {
   const { answer_id } = req.params;
   models.reportAnswer(answer_id)
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       res.status(204).send('Answer is reported!');
     }).catch((err) => res.status(500).send(err));
 };

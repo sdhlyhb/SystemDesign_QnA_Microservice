@@ -143,30 +143,193 @@ describe('PUT /qa/answers/:answer_id/helpful', () => {
   });
 });
 
-describe('POST /qa/questions', () => {
-  it.todo('response with status code 201');
-  it.todo('should add question to the corresponding product');
-  it.todo('should response with 500 and error message if the product_id is invalid');
-});
-describe('POST /qa/questions/:question_id/answers', () => {
-  it.todo('response with status code 201');
-  it.todo('should add answer to the corresponding question');
-  it.todo('added answer to the corresponding question should contain correct photos if there are any ');
-  it.todo('should response with 500 and error message if the question_id is invalid');
-});
-
 describe('PUT /qa/questions/:question_id/report', () => {
-  it.todo('response with status code 204');
-  it.todo('should update the report status to true for the quetion');
-  it.todo('should response with 500 and error message if the quetion_id is invalid');
+  const questionId_test = 252171;
+  const invalidId = 'invalid';
+
+  afterEach(async () => {
+    await pool.query(`UPDATE questions SET reported = false WHERE id = ${questionId_test};`);
+  });
+
+  it('should send status code 204 and change the reported from false to true for valid question_id', async () => {
+    const res = await request(app)
+      .put(`/qa/questions/${questionId_test}/report`);
+    // console.log(res);
+    expect(res.status).toEqual(204);
+    const dataAfter = await pool.query(`SELECT reported FROM questions WHERE id = ${questionId_test}`);
+    const reportStatusAfterTest = dataAfter.rows[0].reported;
+    expect(reportStatusAfterTest).toEqual(true);
+  });
+  it('should send status code 500 for invalid question_id', async () => {
+    const res = await request(app)
+      .put(`/qa/questions/${invalidId}/report`);
+    expect(res.status).toEqual(500);
+  });
 });
 
 describe('put /qa/answers/:answer_id/report', () => {
-  it.todo('response with status code 204');
-  it.todo('should update the report status to true for the answer');
-  it.todo('should response with 500 and error message if the answer_id is invalid');
+  const ansId_test = 492234;
+  const invalidId = 'invalid';
+
+  afterEach(async () => {
+    await pool.query(`UPDATE answers SET answer_reported = false WHERE id = ${ansId_test};`);
+  });
+
+  it('should send status code 204 and change the answer_reported from false to true valid answer_id', async () => {
+    const res = await request(app)
+      .put(`/qa/answers/${ansId_test}/report`);
+    // console.log(res);
+    expect(res.status).toEqual(204);
+    const dataAfter = await pool.query(`SELECT answer_reported FROM answers WHERE id = ${ansId_test}`);
+    const reportedStatusAfter = dataAfter.rows[0].answer_reported;
+    expect(reportedStatusAfter).toEqual(true);
+  });
+  it('should send status code 500 for invalid answer_id', async () => {
+    const res = await request(app)
+      .put(`/qa/answers/${invalidId}/helpful`);
+    expect(res.status).toEqual(500);
+  });
 });
 
+describe('POST /qa/questions', () => {
+  const testData = {
+    product_id: 71697,
+    body: 'This is a test question post for product 71697',
+    name: 'sdc_tester_2022',
+    email: 'sdcTester@email.com',
+  };
+  const invalidTestData = {
+    product_id: 'invalid',
+    body: 'This is a test question post for invalid product',
+    name: 'sdc_tester_2022',
+    email: 'sdcTester@email.com',
+  };
+
+  afterEach(async () => {
+    await pool.query(`DELETE FROM questions WHERE asker_name = '${testData.name}'`);
+  });
+
+  it('should post the testData to db and respond with status 201 and the posted question matching the testData', async () => {
+    const res = await request(app)
+      .post('/qa/questions')
+      .send(testData);
+      // check the response
+    // console.log('this is reponse for test:', res.text);
+    expect(res.status).toEqual(201);
+    expect(res.text).toBe('Question added!');
+    // Check if the test data is in the database
+    const dbData = await pool.query(`SELECT * FROM questions WHERE asker_name = '${testData.name}'`);
+    // console.log('dbData:', dbData.rows);
+    expect(dbData.rows[0].product_id).toBe(testData.product_id);
+    expect(dbData.rows[0].question_body).toBe(testData.body);
+    expect(dbData.rows[0].asker_name).toBe(testData.name);
+    expect(dbData.rows[0].asker_email).toBe(testData.email);
+    expect(dbData.rows[0].reported).toBe(false);
+    expect(dbData.rows[0].helpfulness).toEqual(0);
+  });
+
+  it('should response with status code 500 for posting data to invalid product', async () => {
+    const res = await request(app)
+      .post('/qa/questions')
+      .send(invalidTestData);
+      // check the response
+    expect(res.status).toEqual(500);
+    expect(res.body.name).toEqual('error');
+  });
+});
+
+describe('POST /qa/questions/:question_id/answers', () => {
+  const testQ_id = 999;
+
+  const testDataWithoutPhotos = {
+    body: 'This is a test answer post for question 999 without photos',
+    name: 'sdc_tester_2022',
+    email: 'sdcTester@email.com',
+    photos: [],
+  };
+  const testDataWithPhotos = {
+    body: 'This is a test answer post for question 999 with photos',
+    name: 'sdc_tester_2022',
+    email: 'sdcTester@email.com',
+    photos: ['image1.jpg', 'image2.png'],
+  };
+
+  let test_answer_id,
+    ansLenBeforeTest;
+  beforeEach(async () => {
+    const res_getAnswer_beforeTest = await request(app)
+      .get(`/qa/questions/${testQ_id}/answers`)
+      .set('Accept', 'application/json');
+    ansLenBeforeTest = res_getAnswer_beforeTest.body.results.length;
+  });
+  afterEach(async () => {
+    await pool.query(`DELETE FROM photos WHERE answer_id = ${test_answer_id};`);
+    await pool.query(`DELETE FROM answers WHERE answerer_name = '${testDataWithoutPhotos.name}';`);
+  });
+  it('should response with status code 201 and display correct answer content for posting answers without photos to valid question', async () => {
+    const res = await request(app)
+      .post(`/qa/questions/${testQ_id}/answers`)
+      .send(testDataWithoutPhotos);
+      // check the response
+    // console.log('this is res of post ans:', res);
+    expect(res.status).toEqual(201);
+    expect(res.text).toEqual('Answer added!');
+    // check inserted answer data shape:
+    const res_getAnswer_afterTest = await request(app)
+      .get(`/qa/questions/${testQ_id}/answers`)
+      .set('Accept', 'application/json');
+    const ansLenAfterTest = res_getAnswer_afterTest.body.results.length;
+    test_answer_id = res_getAnswer_afterTest.body.results[ansLenAfterTest - 1].answer_id;
+    // console.log('before, after:', ansLenBeforeTest, ansLenAfterTest);
+    const ans_res = res_getAnswer_afterTest.body.results;
+    expect(ansLenAfterTest === ansLenBeforeTest + 1).toBe(true);
+    expect(ans_res[ansLenAfterTest - 1].body).toBe(testDataWithoutPhotos.body);
+    expect(ans_res[ansLenAfterTest - 1].answerer_name).toBe(testDataWithoutPhotos.name);
+    expect(ans_res[ansLenAfterTest - 1].photos.length).toEqual(0);
+    expect(ans_res[ansLenAfterTest - 1].helpfulness).toEqual(0);
+    expect(ans_res[ansLenAfterTest - 1].reported).toEqual(false);
+  });
+  it('should response with status code 201 and display correct answer content for posting answers with photos to valid question', async () => {
+    const res = await request(app)
+      .post(`/qa/questions/${testQ_id}/answers`)
+      .send(testDataWithPhotos);
+      // check the response
+    // console.log('this is res of post ans:', res);
+    expect(res.status).toEqual(201);
+    expect(res.text).toEqual('Answer added!');
+    // check inserted answer data shape:
+    const res_getAnswer_afterTest = await request(app)
+      .get(`/qa/questions/${testQ_id}/answers`)
+      .set('Accept', 'application/json');
+    const ansLenAfterTest = res_getAnswer_afterTest.body.results.length;
+    test_answer_id = res_getAnswer_afterTest.body.results[ansLenAfterTest - 1].answer_id;
+    // console.log('before, after:', ansLenBeforeTest, ansLenAfterTest);
+    const ans_res = res_getAnswer_afterTest.body.results;
+    expect(ansLenAfterTest === ansLenBeforeTest + 1).toBe(true);
+    expect(ans_res[ansLenAfterTest - 1].body).toBe(testDataWithPhotos.body);
+    expect(ans_res[ansLenAfterTest - 1].answerer_name).toBe(testDataWithPhotos.name);
+    expect(ans_res[ansLenAfterTest - 1].photos.length).toEqual(testDataWithPhotos.photos.length);
+    expect(ans_res[ansLenAfterTest - 1].helpfulness).toEqual(0);
+    expect(ans_res[ansLenAfterTest - 1].reported).toEqual(false);
+  });
+});
+
+describe('POST /qa/questions/:question_id/answers with invalid question id', () => {
+  it('should response with status code 500 for posting data to invalid question', async () => {
+    const invalidQ_id = 'invalid_id';
+    const invalidTestData = {
+      body: 'This is a test answer post for invalid question',
+      name: 'sdc_tester',
+      email: 'sdcTester@email.com',
+      photos: [],
+    };
+    const res = await request(app)
+      .post(`/qa/questions/${invalidQ_id}/answers`)
+      .send(invalidTestData);
+      // check the response
+    expect(res.status).toEqual(500);
+  });
+});
 
 /** ******* old sample data test ********************** */
 // describe('Test sample questions response', () => {
