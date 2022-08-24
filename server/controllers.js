@@ -71,13 +71,23 @@ const addAQuestion = (req, res) => {
     }).catch((err) => res.status(500).send(err));
 };
 
-const addAnswer = (req, res) => {
-  const dataObj = req.body;
-  const { question_id } = req.params;
-  models.addAnswer(question_id, dataObj.body, dataObj.name, dataObj.email, dataObj.photos)
-    .then((response) => {
-      res.status(201).send('Answer added!');
-    }).catch((err) => res.status(500).send(err));
+const addAnswer = async (req, res) => {
+  try {
+    const dataObj = req.body;
+    const { question_id } = req.params;
+    const {
+      body, name, email, photos,
+    } = dataObj;
+    const results = await models.addAnswer_withoutPhotos(question_id, body, name, email);
+    const answer_id = results.rows[0].id;
+    if (photos.length) {
+      const addPhotosRes = await models.addPhotos(answer_id, photos);
+    }
+
+    res.status(201).send('Answer added!');
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
 const voteQuestionHelpful = (req, res) => {
