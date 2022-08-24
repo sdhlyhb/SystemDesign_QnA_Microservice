@@ -238,7 +238,7 @@ describe('POST /qa/questions', () => {
   });
 });
 
-describe('POST /qa/questions/:question_id/answers', () => {
+describe('POST /qa/questions/:question_id/answers without photos', () => {
   const testQ_id = 999;
 
   const testDataWithoutPhotos = {
@@ -247,6 +247,34 @@ describe('POST /qa/questions/:question_id/answers', () => {
     email: 'sdcTester@email.com',
     photos: [],
   };
+  afterEach(async () => {
+    await pool.query('DELETE FROM photos WHERE answer_id >=6879308;');
+    await pool.query('DELETE FROM answers WHERE id >=6879308;');
+  });
+  it('should response with status code 201 and display correct answer content for posting answers without photos to valid question', async () => {
+    const res = await request(app)
+      .post(`/qa/questions/${testQ_id}/answers`)
+      .send(testDataWithoutPhotos);
+      // check the response
+    expect(res.status).toEqual(201);
+    expect(res.text).toEqual('Answer added!');
+    // check inserted answer data in the database:
+    const dbData = await pool.query(`SELECT * FROM answers WHERE answerer_name = '${testDataWithoutPhotos.name}'`);
+    const testAnsId = dbData.rows[0].id;
+    const dbData_photos = await pool.query(`SELECT * FROM photos WHERE answer_id = '${testAnsId}'`);
+    expect(dbData.rows[0].question_id).toBe(testQ_id);
+    expect(dbData.rows[0].answer_body).toBe(testDataWithoutPhotos.body);
+    expect(dbData.rows[0].answerer_name).toBe(testDataWithoutPhotos.name);
+    expect(dbData.rows[0].answerer_email).toBe(testDataWithoutPhotos.email);
+    expect(dbData.rows[0].answer_helpfulness).toEqual(0);
+    expect(dbData.rows[0].answer_reported).toEqual(false);
+    expect(dbData_photos.rows.length).toEqual(0);
+  });
+});
+
+describe('POST /qa/questions/:question_id/answers with photos ', () => {
+  const testQ_id = 999;
+
   const testDataWithPhotos = {
     body: 'This is a test answer post for question 999 with photos',
     name: 'sdc_tester_2022',
@@ -254,40 +282,9 @@ describe('POST /qa/questions/:question_id/answers', () => {
     photos: ['image1.jpg', 'image2.png'],
   };
 
-  let test_answer_id,
-    ansLenBeforeTest;
-  beforeEach(async () => {
-    const res_getAnswer_beforeTest = await request(app)
-      .get(`/qa/questions/${testQ_id}/answers`)
-      .set('Accept', 'application/json');
-    ansLenBeforeTest = res_getAnswer_beforeTest.body.results.length;
-  });
   afterEach(async () => {
-    await pool.query(`DELETE FROM photos WHERE answer_id = ${test_answer_id};`);
-    await pool.query(`DELETE FROM answers WHERE answerer_name = '${testDataWithoutPhotos.name}';`);
-  });
-  it('should response with status code 201 and display correct answer content for posting answers without photos to valid question', async () => {
-    const res = await request(app)
-      .post(`/qa/questions/${testQ_id}/answers`)
-      .send(testDataWithoutPhotos);
-      // check the response
-    // console.log('this is res of post ans:', res);
-    expect(res.status).toEqual(201);
-    expect(res.text).toEqual('Answer added!');
-    // check inserted answer data shape:
-    const res_getAnswer_afterTest = await request(app)
-      .get(`/qa/questions/${testQ_id}/answers`)
-      .set('Accept', 'application/json');
-    const ansLenAfterTest = res_getAnswer_afterTest.body.results.length;
-    test_answer_id = res_getAnswer_afterTest.body.results[ansLenAfterTest - 1].answer_id;
-    // console.log('before, after:', ansLenBeforeTest, ansLenAfterTest);
-    const ans_res = res_getAnswer_afterTest.body.results;
-    expect(ansLenAfterTest === ansLenBeforeTest + 1).toBe(true);
-    expect(ans_res[ansLenAfterTest - 1].body).toBe(testDataWithoutPhotos.body);
-    expect(ans_res[ansLenAfterTest - 1].answerer_name).toBe(testDataWithoutPhotos.name);
-    expect(ans_res[ansLenAfterTest - 1].photos.length).toEqual(0);
-    expect(ans_res[ansLenAfterTest - 1].helpfulness).toEqual(0);
-    expect(ans_res[ansLenAfterTest - 1].reported).toEqual(false);
+    await pool.query('DELETE FROM photos WHERE answer_id >=6879308;');
+    await pool.query('DELETE FROM answers WHERE id >=6879308;');
   });
   it('should response with status code 201 and display correct answer content for posting answers with photos to valid question', async () => {
     const res = await request(app)
@@ -297,20 +294,19 @@ describe('POST /qa/questions/:question_id/answers', () => {
     // console.log('this is res of post ans:', res);
     expect(res.status).toEqual(201);
     expect(res.text).toEqual('Answer added!');
-    // check inserted answer data shape:
-    const res_getAnswer_afterTest = await request(app)
-      .get(`/qa/questions/${testQ_id}/answers`)
-      .set('Accept', 'application/json');
-    const ansLenAfterTest = res_getAnswer_afterTest.body.results.length;
-    test_answer_id = res_getAnswer_afterTest.body.results[ansLenAfterTest - 1].answer_id;
-    // console.log('before, after:', ansLenBeforeTest, ansLenAfterTest);
-    const ans_res = res_getAnswer_afterTest.body.results;
-    expect(ansLenAfterTest === ansLenBeforeTest + 1).toBe(true);
-    expect(ans_res[ansLenAfterTest - 1].body).toBe(testDataWithPhotos.body);
-    expect(ans_res[ansLenAfterTest - 1].answerer_name).toBe(testDataWithPhotos.name);
-    expect(ans_res[ansLenAfterTest - 1].photos.length).toEqual(testDataWithPhotos.photos.length);
-    expect(ans_res[ansLenAfterTest - 1].helpfulness).toEqual(0);
-    expect(ans_res[ansLenAfterTest - 1].reported).toEqual(false);
+    // check inserted answer data in the database:
+    const dbData = await pool.query(`SELECT * FROM answers WHERE answerer_name = '${testDataWithPhotos.name}'`);
+    const testAnsId = dbData.rows[0].id;
+    const dbData_photos = await pool.query(`SELECT * FROM photos WHERE answer_id = '${testAnsId}'`);
+    expect(dbData.rows[0].question_id).toBe(testQ_id);
+    expect(dbData.rows[0].answer_body).toBe(testDataWithPhotos.body);
+    expect(dbData.rows[0].answerer_name).toBe(testDataWithPhotos.name);
+    expect(dbData.rows[0].answerer_email).toBe(testDataWithPhotos.email);
+    expect(dbData.rows[0].answer_helpfulness).toEqual(0);
+    expect(dbData.rows[0].answer_reported).toEqual(false);
+    expect(dbData_photos.rows.length).toEqual(testDataWithPhotos.photos.length);
+    expect(dbData_photos.rows[0].photo_url).toBe(testDataWithPhotos.photos[0]);
+    expect(dbData_photos.rows[1].photo_url).toBe(testDataWithPhotos.photos[1]);
   });
 });
 
