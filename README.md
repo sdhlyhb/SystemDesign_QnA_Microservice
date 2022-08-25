@@ -27,7 +27,7 @@ Response
         "question_helpfulness": 4,
         "reported": 0,
         "answers": {
-          68: {
+          "68": {
             "id": 68,
             "body": "We are selling it here without any markup from the middleman!",
             "date": "2018-08-18T00:00:00.000Z",
@@ -46,7 +46,7 @@ Response
         "question_helpfulness": 2,
         "reported": 0,
         "answers": {
-          70: {
+          "70": {
             "id": 70,
             "body": "Some of the seams started splitting the first time I wore it!",
             "date": "2019-11-28T00:00:00.000Z",
@@ -54,7 +54,7 @@ Response
             "helpfulness": 6,
             "photos": [],
           },
-          78: {
+          "78": {
             "id": 78,
             "body": "9 lives",
             "date": "2019-11-12T00:00:00.000Z",
