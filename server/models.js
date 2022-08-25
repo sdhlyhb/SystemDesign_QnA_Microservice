@@ -1,3 +1,4 @@
+/* eslint-disable no-else-return */
 const pool = require('../db/postgres/index');
 
 pool.on('error', (err) => {
@@ -49,25 +50,20 @@ const addAQuestion = (product_id, body, name, email) => {
   return pool.query(queryString, values);
 };
 
-const addAnswer = (question_id, body, name, email, photos) => {
-  const queryString_insertAns = `
+const addAnswer_withoutPhotos = (question_id, body, name, email) => {
+  const queryString = `
   INSERT INTO answers (question_id, answer_body, answer_date, answerer_name, answerer_email)
- VALUES ($1, $2, NOW(), $3, $4)`;
-  const values_insertAns = [question_id, body, name, email];
-  if (photos.length === 0) {
-    return pool.query(queryString_insertAns, values_insertAns);
-  } else {
-    const promises = [pool.query(queryString_insertAns, values_insertAns)];
-    const promises2 = photos.map((url) => {
-      const queryString_insertP = `INSERT INTO photos (answer_id, photo_url) VALUES (currval('answers_id_seq'), $1);`;
-      const values = [url];
-      return pool.query(queryString_insertP, values);
-    });
-    const promises_all = promises.concat(promises2);
-    return Promise.all(promises_all);
+ VALUES ($1, $2, NOW(), $3, $4) RETURNING id;`;
+  const values = [question_id, body, name, email];
+  return pool.query(queryString, values);
+};
 
-  }
-
+const addPhotos = async (answer_id, photos) => {
+  await photos.forEach((url) => {
+    const values = [answer_id, url];
+    const queryString = 'INSERT INTO photos (answer_id, photo_url) VALUES($1, $2);';
+    return pool.query(queryString, values);
+  });
 };
 
 const voteQuestionHelpful = (question_id) => {
@@ -104,7 +100,8 @@ module.exports = {
   getQuestions,
   getAnswersResults,
   addAQuestion,
-  addAnswer,
+  addAnswer_withoutPhotos,
+  addPhotos,
   voteQuestionHelpful,
   reportQuestion,
   voteAnswerHelpful,
