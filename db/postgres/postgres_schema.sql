@@ -86,18 +86,17 @@ ALTER TABLE answers ALTER COLUMN answer_reported  TYPE bool USING CASE WHEN answ
 ALTER TABLE answers ALTER COLUMN answer_reported SET DEFAULT false;
 
 
-
-
-
-
-
-
-
-
-CREATE INDEX idx_product_id ON questions(product_id);
-CREATE INDEX fk_answer_question_id ON answers(question_id);
-CREATE INDEX fk_photos_answer_id ON photos(answer_id);
-
 SELECT setval ('questions_id_seq', (SELECT max(id) FROM questions) + 1);
 SELECT setval ('answers_id_seq', (SELECT max(id) FROM answers) + 1);
 SELECT setval ('photos_id_seq', (SELECT max(id) FROM photos) + 1);
+
+
+
+
+
+-- move indexing to a separate file
+
+-- CREATE INDEX idx_product_id ON questions(product_id);
+-- CREATE INDEX fk_answer_question_id ON answers(question_id);
+-- CREATE INDEX fk_photos_answer_id ON photos(answer_id);
+

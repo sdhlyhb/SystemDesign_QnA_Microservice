@@ -96,7 +96,7 @@ const voteQuestionHelpful = (req, res) => {
   const { question_id } = req.params;
   models.voteQuestionHelpful(question_id)
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       res.status(204).send('Question voted helpful!');
     }).catch((err) => res.status(500).send(err));
 };
