@@ -1,7 +1,7 @@
 # Questions and Answers API
 ### List Questions
 
-`GET /qa/:product_id`
+`GET /qa/questions`
 Retrieves a list of questions for a particular product.  This list *does not* include any reported questions.
 
 Parameters
@@ -75,7 +75,7 @@ Response
 
 Returns answers for a given question. This list *does not* include any reported answers.
 
-`GET /qa/:question_id/answers`
+`GET /qa/questions/:question_id/answers`
 
 Parameters
 
@@ -131,7 +131,7 @@ Response
 
 Adds a question for the given product
 
-`POST /qa/:product_id`
+`POST /qa/questions`
 
 Parameters
 
@@ -157,7 +157,7 @@ Response
 
 Adds an answer for the given question
 
-`POST /qa/:question_id/answers`
+`POST /qa/questions/:question_id/answers`
 
 Parameters
 
@@ -184,7 +184,7 @@ Response
 
 Updates a question to show it was found helpful.
 
-`PUT /qa/question/:question_id/helpful`
+`PUT /qa/questions/:question_id/helpful`
 
 Parameters
 
@@ -202,7 +202,7 @@ Response
 
 Updates a question to show it was reported. Note, this action does not delete the question, but the question will not be returned in the above GET request.
 
-`PUT /qa/question/:question_id/report`
+`PUT /qa/questions/:question_id/report`
 
 Parameters
 
@@ -220,7 +220,7 @@ Response
 
 Updates an answer to show it was found helpful.
 
-`PUT /qa/answer/:answer_id/helpful`
+`PUT /qa/answers/:answer_id/helpful`
 
 Parameters
 
@@ -238,7 +238,7 @@ Response
 
 Updates an answer to show it has been reported.  Note, this action does not delete the answer, but the answer will not be returned in the above GET request.
 
-`PUT /qa/answer/:answer_id/report`
+`PUT /qa/answers/:answer_id/report`
 
 Parameters
 
