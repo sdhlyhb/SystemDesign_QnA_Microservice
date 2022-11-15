@@ -1,4 +1,51 @@
-# Questions and Answers API
+# System Design: Questions and Answers API
+The goal of the project was to build a scalable RESTful API for an existing e-commerce web application and optimize the performance to handle the web scale traffic loads. I worked with two other software engineers to breakdown the original legacy API into micro-services. I was responsible for redesigning and building a backend server and database for Questions and Answers API micro-service and the service I built was able to withstand up to 4500 RPS for the most used read route with  ~0% error rate.
+
+## **Tech Stacks**
+
+Backend Development:
+
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+
+
+Deployment:
+
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![EC2](https://img.shields.io/badge/Amazon%20Ec2-FF9900.svg?style=for-the-badge&logo=amazon-ec2&logoColor=white)
+
+
+Testing: 
+
+![JEST](https://img.shields.io/badge/JEST-C21325.svg?style=for-the-badge&logo=jest&logoColor=white)
+![SuperTest](https://img.shields.io/badge/SuperTest-C21325.svg?style=for-the-badge&logo=supertest&logoColor=white)
+![k6](https://img.shields.io/badge/k6-7D64FF.svg?style=for-the-badge&logo=k6&logoColor=white)
+![NewRelic](https://img.shields.io/badge/NewRelic-008C99.svg?style=for-the-badge&logo=new-relic&logoColor=white)
+![LoaderIo](https://img.shields.io/badge/Loader.io-4169E1.svg?style=for-the-badge&logo=loader-io&logoColor=white)
+
+
+## **Table of Contents**
+
+- <a href="#system-design-and-optimization"> System Design and Optimization </a>
+    - <a href="#database-schema"> Database Schema </a>
+    - <a href="#test-coverage"> Test Coverage </a>
+    - <a href="#architecture"> Architecture </a>
+- <a href="#api-endpoints"> API Endpoints</a>
+- <a href="#installation"> Installation</a>
+
+
+## System Design and Optimization
+
+### Database Schema
+
+### Test Coverage
+
+### Architecture
+
+
+## API Endpoints
 ### List Questions
 
 `GET /qa/questions`
@@ -249,3 +296,34 @@ Parameters
 Response
 
 `Status: 204 NO CONTENT `
+
+
+## Installation
+1. Fork the project and clone to your local repository
+2. Install all the packages and dependencies by running:
+
+```jsx
+npm install
+```
+
+3. Run webpack at local development mode:
+
+```jsx
+npm run react-dev
+```
+
+4. create `.env` file and add following variables:
+
+```jsx
+PG_USER = <YOUR_USERNAME>
+PG_PASSWORD = <YOUR_PASSWORD>
+PG_PORT = <YOUR_DB_PORT>
+PG_HOST = <YOUR_DB_HOST>
+PG_DB = <YOUR_DB_NAME>
+```
+
+5. Start server:
+
+```jsx
+npm run server-dev
+```
