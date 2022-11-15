@@ -32,6 +32,7 @@ Testing:
     - <a href="#database-schema"> Database Schema </a>
     - <a href="#test-coverage"> Test Coverage </a>
     - <a href="#architecture"> Architecture </a>
+    - <a href="#outcome"> Outcome </a>
 - <a href="#api-endpoints"> API Endpoints</a>
 - <a href="#installation"> Installation</a>
 
@@ -40,10 +41,20 @@ Testing:
 
 ### Database Schema
 
+![schema](https://user-images.githubusercontent.com/8715043/201832599-3383847c-e723-4931-8e8a-5fb03ff74799.png)
+
 ### Test Coverage
+
+<img width=800px src="https://user-images.githubusercontent.com/8715043/201833463-e4322745-cc31-4e78-a214-a0b496b111f6.png"> </img>
 
 ### Architecture
 
+![architechture](https://user-images.githubusercontent.com/8715043/201833139-328603e7-bbcb-4871-9c1b-a20b6af87a40.png)
+
+### Outcome
+Achieved 4500 RPS with average response time < 2s, err rate ~0%
+
+![image](https://user-images.githubusercontent.com/8715043/201834978-145f1426-3c72-4d4e-9f43-9e573f7a4a13.png)
 
 ## API Endpoints
 ### List Questions
