@@ -317,13 +317,7 @@ Response
 npm install
 ```
 
-3. Run webpack at local development mode:
-
-```jsx
-npm run react-dev
-```
-
-4. create `.env` file and add following variables:
+3. create `.env` file and add following variables:
 
 ```jsx
 PG_USER = <YOUR_USERNAME>
@@ -333,8 +327,14 @@ PG_HOST = <YOUR_DB_HOST>
 PG_DB = <YOUR_DB_NAME>
 ```
 
-5. Start server:
+4. Start server:
 
 ```jsx
 npm run server-dev
+```
+
+5. Run tests:
+
+```jsx
+npm test
 ```
